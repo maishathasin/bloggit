@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ repo.name }}</title>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="{{ repo.name }}.html">Blog</a>
+    </nav>
+    <h1>{{ repo.name }}</h1>
+    <p>{{ repo.description }}</p>
+    <div>{{ readme | safe }}</div>
+</body>
+</html>
