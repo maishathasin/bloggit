@@ -1,0 +1,482 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body,
+html {
+  font-family: 'Untitled Sans', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+    sans-serif;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* *::-webkit-scrollbar {
+  display: none;
+} */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-style: normal;
+  line-height: 100%;
+}
+
+h1 {
+  font-family: 'Tiempos', Cambria, Cochin, Georgia, Times, 'Times New Roman',
+    serif;
+  font-weight: 400;
+  font-size: 140px;
+  line-height: 85%;
+}
+
+h2 {
+  font-family: 'Tiempos', Cambria, Cochin, Georgia, Times, 'Times New Roman',
+    serif;
+  font-size: 40px;
+}
+h3 {
+  font-family: 'Tiempos', Cambria, Cochin, Georgia, Times, 'Times New Roman';
+  font-weight: 500;
+  font-size: 20px;
+  margin: 1rem 0 0rem 0;
+}
+
+h4 {
+  font-weight: 400;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+h5 {
+  font-weight: 550;
+  font-size: 25px;
+}
+
+h6 {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+p {
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 150%;
+}
+
+a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.1em;
+  text-decoration-color: #7f4fc7;
+}
+
+.animate-underline-white,
+.animate-underline-purple {
+  display: inline-block;
+  position: relative;
+}
+
+.animate-underline-white::after,
+.animate-underline-purple::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #fff;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.animate-underline-white::after {
+  background-color: #fff;
+}
+
+.animate-underline-purple::after {
+  background-color: #685275;
+}
+
+.animate-underline-white:hover::after,
+.animate-underline-purple:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+strong {
+  font-weight: 600;
+}
+li {
+  line-height: 150%;
+  font-weight: 400;
+  list-style: none;
+  position: relative;
+  padding-left: 1.5rem;
+  margin-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+div > ul > li:first-child {
+  margin-top: 1rem;
+}
+
+li:before {
+  content: '⁍';
+  position: absolute;
+  left: -1rem;
+  top: 0rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+blockquote {
+  padding: 0.2em 2em;
+  position: relative;
+}
+
+blockquote p {
+  font-size: 1rem;
+}
+
+blockquote:before {
+  color: #685275;
+  font-family: 'Tiempos', Cambria, Cochin, Georgia, Times, 'Times New Roman',
+    serif;
+  position: absolute;
+  content: '“';
+  font-size: 4em;
+  top: -0.2em;
+  left: 0;
+}
+
+blockquote:after {
+  color: #685275;
+  font-family: 'Tiempos', Cambria, Cochin, Georgia, Times, 'Times New Roman',
+    serif;
+  position: absolute;
+  content: '”';
+  font-size: 4em;
+  right: 0.1em;
+  bottom: -0.7em;
+}
+
+li > blockquote {
+  padding: 0em 2em;
+  position: relative;
+}
+
+li > blockquote:before {
+  top: 0.1em;
+}
+
+li > blockquote:after {
+  bottom: -0.4em;
+  right: 0.1em;
+}
+
+blockquote > ul > li {
+  color: #685275 !important;
+}
+
+figure > a > img {
+  max-height: 50vh;
+}
+
+.sidenote-right,
+.marginnote-right {
+  float: right;
+  clear: right;
+  margin-right: -32%;
+  width: 30%;
+  margin-top: 0.3rem;
+  margin-bottom: 0;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  padding: 0.5rem;
+  vertical-align: baseline;
+  position: relative;
+  border-top: 1px solid black;
+}
+
+.sidenote-left,
+.marginnote-left {
+  float: left;
+  clear: left;
+  margin-left: -32%;
+  width: 30%;
+  margin-top: 0.3rem;
+  margin-bottom: 0;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  padding: 0.5rem;
+  vertical-align: baseline;
+  position: relative;
+  border-top: 1px solid black;
+}
+
+.sidenote-number {
+  font-size: 0.6rem;
+  top: -1rem;
+  padding: 0rem 0.5rem 0.5rem 0;
+}
+/* .sidenote-number:after,
+.sidenote-left:before,
+.sidenote-right:before {
+  position: relative;
+  vertical-align: baseline;
+}
+
+.sidenote-number:after {
+  content: counter(sidenote-counter);
+  font-size: 0.6rem;
+  top: -0.5rem;
+  left: 0.1rem;
+  right: 0.2rem;
+}
+
+.sidenote-left:before,
+.sidenote-right:before {
+  content: counter(sidenote-counter) ' ';
+  font-size: 0.6rem;
+  top: -0.5rem;
+  right: 0.2rem;
+} */
+
+/* blockquote .sidenote-left,
+blockquote .sidenote-right,
+blockquote .marginnote-left,
+blockquote .marginnote-right {
+  margin-right: -82%;
+  min-width: 59%;
+  text-align: left;
+} */
+
+div.fullwidth,
+table.fullwidth {
+  width: 100%;
+}
+
+div.table-wrapper {
+  overflow-x: auto;
+  font-family: 'Trebuchet MS', 'Gill Sans', 'Gill Sans MT', sans-serif;
+}
+
+.sans {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+  letter-spacing: 0.03em;
+}
+
+code,
+pre > code {
+  font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-size: 1rem;
+  line-height: 1.42;
+  -webkit-text-size-adjust: 100%; /* Prevent adjustments of font size after orientation changes in iOS. See https://github.com/edwardtufte/tufte-css/issues/81#issuecomment-261953409 */
+}
+
+.sans > code {
+  font-size: 1.2rem;
+}
+
+h1 > code,
+h2 > code,
+h3 > code {
+  font-size: 0.8em;
+}
+
+.marginnote > code,
+.sidenote-left > code,
+.sidenote-right > code {
+  font-size: 1rem;
+}
+
+pre > code {
+  font-size: 0.9rem;
+  width: 52.5%;
+  margin-left: 2.5%;
+  overflow-x: auto;
+  display: block;
+}
+
+pre.fullwidth > code {
+  width: 90%;
+}
+
+.fullwidth {
+  max-width: 90%;
+  clear: both;
+}
+
+span.newthought {
+  font-variant: small-caps;
+  font-size: 1.2em;
+}
+
+input.margin-toggle {
+  display: none;
+}
+
+label.sidenote-number {
+  display: inline-block;
+  max-height: 2rem; /* should be less than or equal to paragraph line-height */
+}
+
+label.margin-toggle:not(.sidenote-number) {
+  display: none;
+}
+
+.btn4 span {
+  transform: translateX(-101%);
+  transition: transform 0.2s cubic-bezier(0.555, 0.06, 0.09, 0.97);
+}
+
+.btn4:hover span {
+  transform: translateX(0);
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 140px;
+  }
+  h2 {
+    font-size: 40px;
+  }
+  h3 {
+    font-size: 20px;
+  }
+
+  h4 {
+    font-size: 15px;
+  }
+  p {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1280px) {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    font-style: normal;
+    line-height: 93%;
+    margin-top: 1rem;
+  }
+  h1 {
+    font-size: 140px;
+    line-height: 85%;
+  }
+
+  h2 {
+    font-size: 40px;
+    line-height: 85%;
+  }
+
+  h3 {
+    font-weight: 500;
+    font-size: 20px;
+  }
+
+  h4 {
+    font-size: 15px;
+    color: #685275;
+  }
+
+  p {
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 150%;
+    color: #000000;
+  }
+
+  aside {
+    transform: translate(225%, -100%);
+    position: absolute;
+    width: 20%;
+    border-left: #685275 1px solid;
+    padding-left: 1rem;
+  }
+
+  aside p {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 760px) {
+  h1 {
+    font-size: 80px;
+    line-height: 85%;
+  }
+
+  label.margin-toggle:not(.sidenote-number) {
+    display: inline;
+  }
+
+  .sidenote,
+  .marginnote {
+    display: none;
+  }
+
+  .margin-toggle:checked + .sidenote,
+  .margin-toggle:checked + .marginnote {
+    display: none;
+    float: left;
+    left: 1rem;
+    clear: both;
+    width: 95%;
+    margin: 1rem 2.5%;
+    vertical-align: baseline;
+    position: relative;
+  }
+
+  label {
+    cursor: pointer;
+  }
+
+  div.table-wrapper,
+  table {
+    width: 85%;
+  }
+}
+
+@media (max-width: 368px) {
+  h1 {
+    font-size: 60px;
+  }
+
+  .sidenote-left,
+  .marginnote-left {
+    display: none;
+  }
+
+  .sidenote-right,
+  .marginnote-right {
+    display: none;
+  }
+}
+
+@layer utilities {
+  @variants responsive {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
+  }
+}

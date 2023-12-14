@@ -1,15 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ repo.name }}</title>
+    <style>
+        /* Existing styles */
+        .hidden { display: none; }
+    </style>
+<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="{{ repo.name }}.html">Blog</a>
-    </nav>
-    <h1>{{ repo.name }}</h1>
-    <p>{{ repo.description }}</p>
-    <div>{{ readme | safe }}</div>
+    <div class="inline w-full h-30 md:h-full flex flex-col md:flex-row">
+        <!-- Sidebar for Articles -->
+        <aside class="md:w-[15vw] md:border-r-[1px] border-b-[1px] md:border-b-[0px] border-black p-8 flex flex-row md:flex-col gap-x-4">
+            <h1 class="text-2xl font-bold mb-4">Articles</h1>
+            <ul class="article-list">
+                {% for repo_name, content in repos.items() %}
+                    <li class="article-item cursor-pointer" onclick="showArticle('{{ repo_name }}')">
+                        <a href="#{{ repo_name }}" class="text-blue-600 hover:text-blue-800">{{ repo_name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <!-- Main Content Area for Article Display -->
+        <section class="flex flex-col md:w-[50vw] h-[70vh] md:h-[90vh] overflow-y-scroll no-scrollbar z-20 article-content">
+            {% set is_first = true %}
+            {% for repo_name, content in repos.items() %}
+                <article id="{{ repo_name }}" class="{{ 'hidden' if not is_first }}">
+                    <header>
+                        <h1 class="text-xl font-semibold">{{ repo_name }}</h1>
+                    </header>
+                    <section class="content mt-4">
+                        {{ content }}
+                    </section>
+                </article>
+                {% if is_first %}
+                    {% set is_first = false %}
+                {% endif %}
+            {% endfor %}
+        </section>
+    </div>
+
+    <script>
+        function showArticle(repoName) {
+            document.querySelectorAll('article').forEach(art => art.classList.add('hidden'));
+            document.getElementById(repoName).classList.remove('hidden');
+        }
+
+        // Automatically show the first article when the page loads
+        window.onload = function() {
+            var firstArticle = document.querySelector('.article-list .article-item');
+            if (firstArticle) {
+                var firstRepoName = firstArticle.textContent.trim();
+                showArticle(firstRepoName);
+            }
+        };
+    </script>
 </body>
 </html>
