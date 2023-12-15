@@ -9,31 +9,59 @@
 <link href="../src/input.css" rel="stylesheet">
 </head>
 <body>
+    <div class="w-full flex  px-3 border-black border justify-end">
+        <div class="relative h-full m-2 p-1 px-3 border-black border ">
+            <input type="text" placeholder="Search..." class="h-full outline-none text-sm" value="">
+        </div></div>
     <div class="inline w-full h-30 md:h-full flex flex-col md:flex-row">
+
         <!-- Sidebar for Articles -->
-        <aside class="md:w-[15vw] md:border-r-[1px] border-b-[1px] md:border-b-[0px] border-black p-8 flex flex-row md:flex-col gap-x-4">
-            <h1 class="text-2xl font-bold mb-4">Articles</h1>
+        <aside class="w-1/4 md:border-r border-black  flex flex-row md:flex-col gap-x-10 side">
+            <h1 class=" font-bold mb-4">Articles</h1>
             <ul class="article-list">
+                <div class="flex flex-col justify-between md:flex-row my-2">
+                    <div class="flex flex-row justify-between md:justify-between content-start items-start w-full gap-2 "><div class="max-w-3/4 md:max-w-[70%] overflow-auto">
+
                 
-                    <li class="article-item cursor-pointer" onclick="showArticle('Basic-python')">
-                        <a href="#Basic-python" class="text-blue-600 hover:text-blue-800">Basic-python</a>
+                    <li class="article-item cursor-pointer" onclick="showArticle('VisualNovel-Cli')">
+                        <a href="#VisualNovel-Cli" class="text-blue-600 hover:text-blue-800">VisualNovel-Cli</a>
                     </li>
                 
+                </div></div>
             </ul>
         </aside>
 
         <!-- Main Content Area for Article Display -->
         <!--<div class="layout"> -->
-        <section class="flex flex-col md:w-[50vw] h-[70vh] md:h-[90vh] overflow-y-scroll no-scrollbar z-20 article-content">
+        <section class="flex flex-col md:w-[50vw] h-[70vh] md:h-[90vh] overflow-y-scroll r md:border-b-[0px] p-10 flex flex-row md:flex-col gap-x-4 no-scrollbar z-20 article-content">
             
             
-                <article id="Basic-python" class="">
+                <article id="VisualNovel-Cli" class="">
                     <header>
-                        <h1 class="text-xl font-semibold">Basic-python</h1>
+                        <h1 class=" font-semibold">VisualNovel-Cli</h1>
                     </header>
                     <section class="content mt-4">
-                        <pre>├── odd-even-sep.py
-└── unique-array.py</pre><p>This is where you add your content</p>
+                        <pre>├── README.md
+├── dialogues.md
+└── main.py</pre><h1>VisualNovel-Cli</h1>
+
+<p>Make visual novels with ncurses in the terminal !!? Interesting idea, do this</p>
+
+<p>TODO:
+- Create a MVP of a transpiler so it translates to specific storiees in the CLI. Simple Markdown transpiler.
+- Markdown, features like: , token for adding dialogue, Ascii based design, clear and then new page, one for same background but for changing dialogue, Input features and input as an answer maybe. 
+- For new characters, Make the background gray-ish and then make the characters more whiter, for contrast</p>
+
+<ul>
+<li>Improve the progress bar</li>
+<li>using ncurses to SELECT choices not input type</li>
+<li>add a way to render the background and the characters</li>
+<li>Any new functionalities for a dating sim ?</li>
+<li><p>(optional) ADD extension for an easier way to add your own terminal game </p></li>
+<li><p>Functionalities to add: Input text box, Clearing backgrounds,</p></li>
+<li><p>Without labels can also add dialogue </p></li>
+</ul>
+
                     </section>
                 </article>
                 

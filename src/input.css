@@ -429,7 +429,7 @@ label.margin-toggle:not(.sidenote-number) {
 
 @media (max-width: 760px) {
   h1 {
-    font-size: 80px;
+    font-size: 70px;
     line-height: 85%;
   }
 
@@ -608,3 +608,43 @@ label.margin-toggle:not(.sidenote-number) {
     }
   }
   
+
+
+  /* Base styles */
+.side {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+}
+
+.title {
+    font-size: 2xl;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.article-list {
+    list-style: none;
+}
+
+.article-item {
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+
+/* Responsive design for screens 600px or smaller */
+@media (max-width: 600px) {
+    .side {
+        flex-direction: column;
+        margin: 0 auto; 
+        padding: 0.25rem;
+        
+    }
+
+    .article-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
