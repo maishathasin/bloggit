@@ -6,9 +6,14 @@ import requests
 import markdown2
 from jinja2 import Environment, FileSystemLoader
 from github import Github, Auth
+from dotenv import load_dotenv
+import os 
+
+load_dotenv()
 
 # Authentication and GitHub Initialization
-auth = Auth.Token("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")
+token = os.getenv('token')
+auth = Auth.Token(token)
 g = Github(auth=auth)
 
 # Directory Definitions
@@ -25,38 +30,58 @@ def get_repo_directory_structure(g, repo_name):
     contents = repo.get_contents("")
     directory_structure = {}
 
-    def parse_contents(contents, path=""):
+    def parse_contents(contents, parent_path=""):
         for content in contents:
-            if content.type == "dir":
-                print("come here")
-                new_path = f"{path}/{content.name}" if path else content.name
-                directory_structure[new_path] = []
-                parse_contents(repo.get_contents(content.path), new_path)
+            # Determine the relative path of the content
+            if parent_path:
+                relative_path = f"{parent_path}/{content.name}"
             else:
-                file_path = f"{path}/{content.name}" if path else content.name
-                directory_structure[path].append(file_path)
+                relative_path = content.name
 
-    parse_contents(contents)
+            if content.type == "dir":
+                # Add the directory as a key with an empty list, and parse its contents
+                directory_structure[relative_path] = []
+                try:
+                    subdir_contents = repo.get_contents(content.path)
+                    parse_contents(subdir_contents, relative_path)
+                except Exception as e:
+                    print(f"Error accessing directory {relative_path}: {e}")
+            else:
+                # Add the file to the parent directory's list
+                if parent_path:
+                    directory_structure[parent_path].append(content.name)
+                else:
+                    # Handle root-level files
+                    directory_structure[content.name] = []
+
+    try:
+        parse_contents(contents)
+    except Exception as e:
+        print(f"Error building directory structure for {repo_name}: {e}")
+
     return directory_structure
 
 
+
+
 def format_directory_structure(structure):
-    def format_tree(node, prefix=""):
+    def format_tree(node, prefix="", is_last=True):
         tree = ""
-        print(structure.get(node, []))
-        for i, path in enumerate(structure.get(node, [])):
-            print(tree)
-            is_last = i == len(structure[node]) - 1
-            tree += f"{prefix}{'└── ' if is_last else '├── '}{path.split('/')[-1]}\n"
-            print(tree)
-            if path in structure:
-                extension = '    ' if is_last else '│   '
-                tree += format_tree(path, prefix + extension)
+        if node:  
+            tree += f"{prefix}{'└── ' if is_last else '├── '}{node.split('/')[-1]}\n"
+
+        if node in structure:
+            children = structure[node]
+            for i, child in enumerate(children):
+                extension = "    " if is_last else "│   "
+                tree += format_tree(child, prefix + extension, i == len(children) - 1)
         return tree
-    
 
-    return format_tree("")
-
+    roots = [node for node in structure if not any(node in items for items in structure.values())]
+    tree = ""
+    for i, root in enumerate(roots):
+        tree += format_tree(root, is_last=(i == len(roots) - 1))
+    return tree.strip()
 
 
 def create_blog_content(g, repo_name):
@@ -64,14 +89,23 @@ def create_blog_content(g, repo_name):
 
         # Get directory structure
         directory_structure = get_repo_directory_structure(g, repo_name)
+        print('helloo')
         print(directory_structure)
         formatted_structure = format_directory_structure(directory_structure)
         print(formatted_structure)
 
 
         repo = g.get_user().get_repo(repo_name)
-        contents = repo.get_contents("README.md")
-        readme_html = markdown2.markdown(contents.decoded_content.decode('utf-8'))
+        print(repo)
+        # for if there is not 
+        try:
+            contents = repo.get_contents("README.md")
+            readme_html = markdown2.markdown(contents.decoded_content.decode('utf-8'))
+        except Exception as e:
+            contents = ' '
+            readme_html = "<p>This is where you add your content</p>"  
+
+        print(contents)
         full_content = f"<pre>{formatted_structure}</pre>{readme_html}"
         return full_content
     except Exception as e:

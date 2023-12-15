@@ -6,6 +6,7 @@
         .hidden { display: none; }
     </style>
 <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+<link href="../src/input.css" rel="stylesheet">
 </head>
 <body>
     <div class="inline w-full h-30 md:h-full flex flex-col md:flex-row">
@@ -22,6 +23,7 @@
         </aside>
 
         <!-- Main Content Area for Article Display -->
+        <!--<div class="layout"> -->
         <section class="flex flex-col md:w-[50vw] h-[70vh] md:h-[90vh] overflow-y-scroll no-scrollbar z-20 article-content">
             {% set is_first = true %}
             {% for repo_name, content in repos.items() %}
@@ -39,6 +41,36 @@
             {% endfor %}
         </section>
     </div>
+    <!-- </div>-->
+
+
+
+
+    <!-- <div class="toc-sidebar" id="tableOfContents">
+        <h3> Table of contents</h3>
+         The ToC will be generated here 
+    </div>
+v-->
+    <script >
+
+document.addEventListener('DOMContentLoaded', function() {
+    const contentArea = document.querySelector('.content');
+    const tocSidebar = document.getElementById('tableOfContents');
+    
+    let headings = contentArea.querySelectorAll('h1');
+    let tocHtml = '<ul>';
+
+    headings.forEach(function(heading, index) {
+        let anchor = `toc${index}`;
+        heading.id = anchor; 
+        tocHtml += `<li><a href="#${anchor}">${heading.textContent}</a></li>`;
+    });
+
+    tocHtml += '</ul>';
+    tocSidebar.innerHTML = tocHtml;
+});
+
+    </script>
 
     <script>
         function showArticle(repoName) {
