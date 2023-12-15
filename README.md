@@ -1,3 +1,8 @@
+---
+title: yes
+Tags: [hello,maisha,good]
+---
+
 # git-blogs
 Minimal static sites for your github repos
 
