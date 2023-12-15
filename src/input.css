@@ -480,3 +480,117 @@ label.margin-toggle:not(.sidenote-number) {
     }
   }
 }
+
+
+
+.markdown * {
+    margin-top: 1rem;
+  }
+  
+  .markdown > * {
+    margin-bottom: 1rem;
+  }
+  
+  .markdown h2 {
+    font-family: "Untitled Sans";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 25px;
+  }
+  
+  .markdown p,
+  .markdown li {
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.25px;
+    line-height: 160%;
+    color: #202020;
+    margin-bottom: 1rem;
+  }
+  
+  .markdown li {
+    position: static;
+  }
+  
+  .markdown strong {
+    font-weight: 700;
+  }
+  
+  .markdown blockquote p {
+    color: #685275;
+  }
+  
+  .markdown img {
+    width: 75%;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .markdown ul > li {
+    list-style: disc;
+    padding-left: 0rem;
+    margin-left: 1.5rem;
+  }
+  
+  .markdown ol > li {
+    list-style: numbers;
+    padding-left: 0rem;
+    margin-left: 1.5rem;
+  }
+  
+  .markdown ol > li:first-child {
+    margin-top: 0.75rem;
+  }
+  
+  .markdown ol > li > ol > li {
+    list-style: upper-alpha;
+    padding-left: 0rem;
+    margin-left: 3rem;
+  }
+  
+  .markdown ol > ol > li {
+    list-style: lower-alpha;
+    padding-left: 0rem;
+    margin-left: 3rem;
+  }
+  
+  .markdown li:before {
+    content: "";
+  }
+  
+  .markdown label a[href^="#"] {
+    display: none;
+    visibility: hidden;
+  }
+  
+  .markdown label p {
+    margin-bottom: 0;
+  }
+  
+  .markdown aside a[href^="#"] {
+    display: none;
+    visibility: hidden;
+  }
+  
+  .markdown aside {
+    font-size: 12px;
+    border-left: #685275 1px solid;
+    padding-left: 1rem;
+    display: inline-block;
+  }
+  
+  @media (min-width: 1280px) {
+    .markdown aside {
+      transform: translate(245%, -125%);
+      position: absolute;
+      width: 20%;
+      border-left: #685275 1px solid;
+      padding-left: 1rem;
+    }
+  
+    .markdown aside p {
+      font-size: 0.75rem;
+    }
+  }
+  

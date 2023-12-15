@@ -6,20 +6,29 @@
         .hidden { display: none; }
     </style>
 <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+
 </head>
 <body>
-    <div class="inline w-full h-30 md:h-full flex flex-col md:flex-row">
+    <div class="w-full flex justify-between px-3 border-black border"><div class="relative h-full m-2 p-1 px-3 border-black border"><input type="text" placeholder="Search..." class="h-full outline-none text-sm" value=""></div></div>
+    <div class="inline w-full h-30 md:h-full flex flex-col md:flex-row 	">
         <!-- Sidebar for Articles -->
-        <aside class="md:w-[15vw] md:border-r-[1px] border-b-[1px] md:border-b-[0px] border-black p-8 flex flex-row md:flex-col gap-x-4">
-            <h1 class="text-2xl font-bold mb-4">Articles</h1>
-            <ul class="article-list">
+        <aside class="md:w-[15vw] md:border-r-[1px] border-black border-r md:border-b-[0px] border-black p-8 flex flex-row md:flex-col gap-x-4">
+            <h1 class="text-2xl font-bold	 mb-4">Articles</h1>
+            <ul class="article-list ">
                 
-                    <li class="article-item cursor-pointer" onclick="showArticle('Will3')">
-                        <a href="#Will3" class="text-blue-600 hover:text-blue-800">Will3</a>
+
+                <div class="flex flex-col justify-between md:flex-row my-2">
+                    <div class="flex flex-row justify-between md:justify-between content-start items-start w-full gap-2 "><div class="max-w-3/4 md:max-w-[70%] overflow-auto">
+
+                    <li class="article-item cursor-pointer grid items-start border-b-[0.5px] border-b-black py-4 px-5 md:px-8 flex flex-col hover:bg-gray-100 cursor-pointer" onclick="showArticle('Will3')">
+                        <a href="#Will3" class="text-blue-600 hover:text-blue-800  text-[30px] whitespace-normal">Will3</a>
                     </li>
+                </div>
+            </div>
+            </div>
                 
                     <li class="article-item cursor-pointer" onclick="showArticle('mori.css')">
-                        <a href="#mori.css" class="text-blue-600 hover:text-blue-800">mori.css</a>
+                        <a href="#mori.css" class="text-blue-600 hover:text-blue-800 border-8">mori.css</a>
                     </li>
                 
             </ul>
