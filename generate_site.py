@@ -1,6 +1,4 @@
 
-
-
 import os
 import requests
 import markdown2
@@ -84,7 +82,13 @@ def format_directory_structure(structure):
     return tree.strip()
 
 
-def create_blog_content(g, repo_name):
+
+def add_tags():
+
+    pass
+
+
+def create_blog_content(g, repo_name,tags):
     try:
 
         # Get directory structure
@@ -94,13 +98,23 @@ def create_blog_content(g, repo_name):
         formatted_structure = format_directory_structure(directory_structure)
         print(formatted_structure)
 
-
+        
         repo = g.get_user().get_repo(repo_name)
         print(repo)
+        
         # for if there is not 
         try:
             contents = repo.get_contents("README.md")
+             # store each readme in the contents folder as the repo_name and then render from there, instead of 
+             # repo name, we make the article name as markdown file name 
+             # add flags for build that just builds the content folder, add flags for add
             readme_html = markdown2.markdown(contents.decoded_content.decode('utf-8'))
+
+                # Convert list of tags into HTML format
+            tags_html = '<ul>' + ''.join([f'<li>{tag}</li>' for tag in tags]) + '</ul>'
+
+            # Incorporate tags into the full content
+            readme_html = f"<pre>{formatted_structure}</pre>{readme_html}<h3>Tags:</h3>{tags_html}"
         except Exception as e:
             contents = ' '
             readme_html = "<p>This is where you add your content</p>"  
@@ -112,12 +126,12 @@ def create_blog_content(g, repo_name):
         print(f"Error processing {repo_name}: {e}")
         return None
 
-def generate_blog_html(g, selected_repos):
+def generate_blog_html(g, repo_tags):
     repo_contents = {}
-    for repo in selected_repos:
-        content = create_blog_content(g, repo.name)
+    for repo_name, tags in repo_tags.items():
+        content = create_blog_content(g, repo_name, tags)
         if content:
-            repo_contents[repo.name] = content
+            repo_contents[repo_name] = content
 
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     template = env.get_template('blog_template.html')
@@ -126,6 +140,18 @@ def generate_blog_html(g, selected_repos):
     with open(os.path.join(OUTPUT_DIR, 'test.html'), 'w') as file:
         file.write(output_from_parsed_template)
 
+
+
+
+
+def get_tags_for_repo(repo_name):
+    tags_str = input(f"Enter tags for {repo_name} (comma-separated): ")
+    return tags_str.split(',')
+
+    
+# Generate the file tree for only input 
+# and only generate the input for either public or give github token 
+
 repos = get_user_repositories(g)
 print("Select repositories to create blogs from (comma-separated):")
 for i, repo in enumerate(repos):
@@ -133,4 +159,10 @@ for i, repo in enumerate(repos):
 
 selected_indexes = input()
 selected_repos = [repos[int(i)] for i in selected_indexes.split(',')]
-generate_blog_html(g, selected_repos)
+
+# Collect tags for each selected repository
+repo_tags = {repo.name: get_tags_for_repo(repo.name) for repo in selected_repos}
+
+# Generate blog HTML using the selected repositories and their respective tags
+generate_blog_html(g, repo_tags)
+

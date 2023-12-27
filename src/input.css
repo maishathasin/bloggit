@@ -61,9 +61,14 @@ h6 {
 }
 
 p {
-  font-weight: 400;
-  font-size: 15px;
+  font-size: 22px;
   line-height: 150%;
+
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: normal;
+  font-display: swap;
 }
 
 a {
