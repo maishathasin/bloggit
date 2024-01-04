@@ -10,9 +10,12 @@ import os
 load_dotenv()
 
 # Authentication and GitHub Initialization
-token = os.getenv('token')
+token = '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'
+print(token)
 auth = Auth.Token(token)
+print(auth)
 g = Github(auth=auth)
+print(g)
 
 # Directory Definitions
 TEMPLATE_DIR = 'templates'
@@ -30,14 +33,9 @@ def get_repo_directory_structure(g, repo_name):
 
     def parse_contents(contents, parent_path=""):
         for content in contents:
-            # Determine the relative path of the content
-            if parent_path:
-                relative_path = f"{parent_path}/{content.name}"
-            else:
-                relative_path = content.name
+            relative_path = f"{parent_path}/{content.name}" if parent_path else content.name
 
             if content.type == "dir":
-                # Add the directory as a key with an empty list, and parse its contents
                 directory_structure[relative_path] = []
                 try:
                     subdir_contents = repo.get_contents(content.path)
@@ -45,19 +43,16 @@ def get_repo_directory_structure(g, repo_name):
                 except Exception as e:
                     print(f"Error accessing directory {relative_path}: {e}")
             else:
-                # Add the file to the parent directory's list
                 if parent_path:
-                    directory_structure[parent_path].append(content.name)
+                    if relative_path not in directory_structure[parent_path]:
+                        directory_structure[parent_path].append(relative_path)
                 else:
-                    # Handle root-level files
-                    directory_structure[content.name] = []
+                    if relative_path not in directory_structure:
+                        directory_structure[relative_path] = []
 
-    try:
-        parse_contents(contents)
-    except Exception as e:
-        print(f"Error building directory structure for {repo_name}: {e}")
-
+    parse_contents(contents)
     return directory_structure
+
 
 
 
@@ -101,7 +96,6 @@ def create_blog_content(g, repo_name,tags):
         
         repo = g.get_user().get_repo(repo_name)
         print(repo)
-        
         # for if there is not 
         try:
             contents = repo.get_contents("README.md")
@@ -109,18 +103,16 @@ def create_blog_content(g, repo_name,tags):
              # repo name, we make the article name as markdown file name 
              # add flags for build that just builds the content folder, add flags for add
             readme_html = markdown2.markdown(contents.decoded_content.decode('utf-8'))
-
                 # Convert list of tags into HTML format
-            tags_html = '<ul>' + ''.join([f'<li>{tag}</li>' for tag in tags]) + '</ul>'
-
+            tags_html = '<ul>' + ''.join([f'<div class= "tag color-change">{tag}</div>' for tag in tags]) + '</ul>'
             # Incorporate tags into the full content
-            readme_html = f"<pre>{formatted_structure}</pre>{readme_html}<h3>Tags:</h3>{tags_html}"
+            readme_html = f"<pre>{formatted_structure}</pre> <br> {readme_html}<h3>Tags:</h3>{tags_html}"
         except Exception as e:
             contents = ' '
             readme_html = "<p>This is where you add your content</p>"  
 
         print(contents)
-        full_content = f"<pre>{formatted_structure}</pre>{readme_html}"
+        full_content = f"{readme_html}"
         return full_content
     except Exception as e:
         print(f"Error processing {repo_name}: {e}")
@@ -135,7 +127,7 @@ def generate_blog_html(g, repo_tags):
 
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     template = env.get_template('blog_template.html')
-    output_from_parsed_template = template.render(repos=repo_contents)
+    output_from_parsed_template = template.render(repos=repo_contents, repo_tags=repo_tags)
 
     with open(os.path.join(OUTPUT_DIR, 'test.html'), 'w') as file:
         file.write(output_from_parsed_template)
@@ -153,6 +145,7 @@ def get_tags_for_repo(repo_name):
 # and only generate the input for either public or give github token 
 
 repos = get_user_repositories(g)
+print(repos)
 print("Select repositories to create blogs from (comma-separated):")
 for i, repo in enumerate(repos):
     print(f"{i}: {repo.name}")
@@ -161,6 +154,7 @@ selected_indexes = input()
 selected_repos = [repos[int(i)] for i in selected_indexes.split(',')]
 
 # Collect tags for each selected repository
+
 repo_tags = {repo.name: get_tags_for_repo(repo.name) for repo in selected_repos}
 
 # Generate blog HTML using the selected repositories and their respective tags

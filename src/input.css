@@ -628,6 +628,26 @@ label.margin-toggle:not(.sidenote-number) {
     margin-bottom: 4px;
 }
 
+/* from mori.css */
+.tag {
+  background-color: white;
+  color: black;
+  border: 1px solid #000;
+  border-radius: 99999px;
+  padding: .5rem .75rem;
+  font-size: .575rem;
+  line-height: 1;
+  display: inline-block;
+  margin-right: 10px; 
+  margin-top: 10px;
+}
+
+.color-change:hover {
+  background-color: #110202; 
+  color: white ;
+  transition: all .14s cubic-bezier(.25, .46, .45, .94);
+
+}
 .article-list {
     list-style: none;
 }
