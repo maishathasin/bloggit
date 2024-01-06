@@ -8,14 +8,14 @@ from dotenv import load_dotenv
 import os 
 
 load_dotenv()
-
-# Authentication and GitHub Initialization
-token = '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'
+token = ''
 print(token)
 auth = Auth.Token(token)
 print(auth)
 g = Github(auth=auth)
 print(g)
+
+
 
 # Directory Definitions
 TEMPLATE_DIR = 'templates'
@@ -88,14 +88,10 @@ def create_blog_content(g, repo_name,tags):
 
         # Get directory structure
         directory_structure = get_repo_directory_structure(g, repo_name)
-        print('helloo')
-        print(directory_structure)
         formatted_structure = format_directory_structure(directory_structure)
-        print(formatted_structure)
 
         
         repo = g.get_user().get_repo(repo_name)
-        print(repo)
         # for if there is not 
         try:
             contents = repo.get_contents("README.md")
@@ -111,26 +107,79 @@ def create_blog_content(g, repo_name,tags):
             contents = ' '
             readme_html = "<p>This is where you add your content</p>"  
 
-        print(contents)
         full_content = f"{readme_html}"
         return full_content
     except Exception as e:
         print(f"Error processing {repo_name}: {e}")
         return None
 
+import json
+
+
 def generate_blog_html(g, repo_tags):
     repo_contents = {}
+    tags_info = {}
     for repo_name, tags in repo_tags.items():
         content = create_blog_content(g, repo_name, tags)
         if content:
             repo_contents[repo_name] = content
+            tags_info[repo_name] = tags
+            # Save each repo's content to a separate HTML file
+            with open(os.path.join(OUTPUT_DIR, 'content', f'{repo_name}.html'), 'w') as file:
+                file.write(content)
 
+  # Read existing tags from tags.json
+    tags_file_path = os.path.join(OUTPUT_DIR, 'tags.json')
+    if os.path.exists(tags_file_path):
+        with open(tags_file_path, 'r') as file:
+            existing_tags = json.load(file)
+    else:
+        existing_tags = {}
+
+    # Update and save tags
+    for repo_name, new_tags in repo_tags.items():
+        # Combine new tags with existing ones, avoiding duplicates
+        existing_tags_for_repo = set(existing_tags.get(repo_name, []))
+        updated_tags = list(existing_tags_for_repo.union(new_tags))
+        existing_tags[repo_name] = updated_tags
+
+    with open(tags_file_path, 'w') as file:
+        json.dump(existing_tags, file, indent=4)
+
+
+
+def build_blog_from_content():
+    # Ensure the content folder exists
+    content_dir = os.path.join(OUTPUT_DIR, 'content')
+    if not os.path.exists(content_dir):
+        print("Content directory does not exist. Please generate content first.")
+        return
+
+    # Read HTML files from the content folder
+    repo_contents = {}
+    for file_name in os.listdir(content_dir):
+        if file_name.endswith('.html'):
+            repo_name = file_name[:-5]  # Remove '.html'
+            with open(os.path.join(content_dir, file_name), 'r') as file:
+                repo_contents[repo_name] = file.read()
+
+    # Load tags from JSON file
+    try:
+        with open(os.path.join(OUTPUT_DIR, 'tags.json'), 'r') as file:
+            repo_tags = json.load(file)
+    except FileNotFoundError:
+        print("Tags file not found. Tags will be empty.")
+        repo_tags = {repo: [] for repo in repo_contents}
+
+    # Generate the main blog page using the saved content
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     template = env.get_template('blog_template.html')
     output_from_parsed_template = template.render(repos=repo_contents, repo_tags=repo_tags)
 
-    with open(os.path.join(OUTPUT_DIR, 'test.html'), 'w') as file:
+    with open(os.path.join(OUTPUT_DIR, 'index.html'), 'w') as file:
         file.write(output_from_parsed_template)
+
+    print("Blog built successfully from content folder.")
 
 
 
@@ -138,14 +187,16 @@ def generate_blog_html(g, repo_tags):
 
 def get_tags_for_repo(repo_name):
     tags_str = input(f"Enter tags for {repo_name} (comma-separated): ")
-    return tags_str.split(',')
+    return tags_str.split(',') if tags_str.strip() else None
+
+
 
     
 # Generate the file tree for only input 
 # and only generate the input for either public or give github token 
 
 repos = get_user_repositories(g)
-print(repos)
+#print(repos)
 print("Select repositories to create blogs from (comma-separated):")
 for i, repo in enumerate(repos):
     print(f"{i}: {repo.name}")
@@ -155,8 +206,14 @@ selected_repos = [repos[int(i)] for i in selected_indexes.split(',')]
 
 # Collect tags for each selected repository
 
-repo_tags = {repo.name: get_tags_for_repo(repo.name) for repo in selected_repos}
+# Generate the repo_tags dictionary
+repo_tags = {}
+for repo in selected_repos:
+    tags = get_tags_for_repo(repo.name)
+    if tags is not None:
+        repo_tags[repo.name] = tags
 
 # Generate blog HTML using the selected repositories and their respective tags
 generate_blog_html(g, repo_tags)
+build_blog_from_content()
 
