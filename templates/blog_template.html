@@ -5,16 +5,16 @@
         /* Existing styles */
         .hidden { display: none; }
     </style>
-<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-<link href="../src/input.css" rel="stylesheet">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link href="../src/input.css" rel="stylesheet">
 </head>
 <body>
     <div class="w-full flex  px-3 border-black border justify-end">
         <div class="relative h-full m-2 p-1 px-3 border-black border ">
-            <input type="text" placeholder="Search..." class="h-full outline-none text-sm" value="">
-        </div></div>
+            <input type="text" placeholder="Search..." class="h-full outline-none text-sm" id="searchBar">
+        </div>
+    </div>
     <div class="inline w-full h-30 md:h-full flex flex-col md:flex-row">
-
         <aside class="w-1/5 md:border-r border-black side">
             <h1 class="font-bold mb-4">Articles</h1>
             <ul class="article-list">
@@ -31,15 +31,12 @@
             </ul>
         </aside>
         
-
-        <!-- Main Content Area for Article Display -->
-        <!--<div class="layout"> -->
-            <section class="w-full md:max-w-[75%] overflow-y-scroll md:border-b-[0px] p-10 no-scrollbar z-20 article-content">
-                {% set is_first = true %}
+        <section class="w-full md:max-w-[75%] overflow-y-scroll md:border-b-[0px] p-10 no-scrollbar z-20 article-content">
+            {% set is_first = true %}
             {% for repo_name, content in repos.items() %}
                 <article id="{{ repo_name }}" class="{{ 'hidden' if not is_first }}">
                     <header>
-                        <h1 class=" font-semibold">{{ repo_name }}</h1>
+                        <h1 class="font-semibold">{{ repo_name }}</h1>
                     </header>
                     <section class="content mt-4">
                         {{ content }}
@@ -51,44 +48,33 @@
             {% endfor %}
         </section>
     </div>
-    <!-- </div>-->
-
-
-
-
-    <!-- <div class="toc-sidebar" id="tableOfContents">
-        <h3> Table of contents</h3>
-         The ToC will be generated here 
-    </div>
-v-->
-    <script >
-
-document.addEventListener('DOMContentLoaded', function() {
-    const contentArea = document.querySelector('.content');
-    const tocSidebar = document.getElementById('tableOfContents');
-    
-    let headings = contentArea.querySelectorAll('h1');
-    let tocHtml = '<ul>';
-
-    headings.forEach(function(heading, index) {
-        let anchor = `toc${index}`;
-        heading.id = anchor; 
-        tocHtml += `<li><a href="#${anchor}">${heading.textContent}</a></li>`;
-    });
-
-    tocHtml += '</ul>';
-    tocSidebar.innerHTML = tocHtml;
-});
-
-    </script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBar = document.getElementById('searchBar');
+            searchBar.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const articles = document.querySelectorAll('.article-item');
+
+                articles.forEach(article => {
+                    const articleName = article.querySelector('a').textContent.toLowerCase();
+                    const tags = Array.from(article.querySelectorAll('.tag')).map(tag => tag.textContent.toLowerCase());
+                    const isMatch = articleName.includes(searchTerm) || tags.some(tag => tag.includes(searchTerm));
+                    
+                    if (isMatch) {
+                        article.style.display = '';
+                    } else {
+                        article.style.display = 'none';
+                    }
+                });
+            });
+        });
+
         function showArticle(repoName) {
             document.querySelectorAll('article').forEach(art => art.classList.add('hidden'));
             document.getElementById(repoName).classList.remove('hidden');
         }
 
-        // Automatically show the first article when the page loads
         window.onload = function() {
             var firstArticle = document.querySelector('.article-list .article-item');
             if (firstArticle) {
