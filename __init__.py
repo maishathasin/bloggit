@@ -7,11 +7,42 @@ import argparse
 import webbrowser
 from github import Github, Auth
 import os 
-from generate_site import *
+from generate_site import  build_blog_from_content, add_repo, delete_blog, get_user_repositories, get_tags_for_repo, generate_blog_html
+import sys
+
 
 console = Console()
 
 def main():
+
+    if len(sys.argv) == 1:
+            console.print(""" 
+               ,--,                                                             ___             
+    ,---,    ,--.'|                                                 ,--,      ,--.'|_           
+  ,---.'|    |  | :       ,---.                                   ,--.'|      |  | :,'          
+  |   | :    :  : '      '   ,'\    ,----._,.           ,----._,. |  |,       :  : ' :          
+  :   : :    |  ' |     /   /   |  /   /  ' /          /   /  ' / `--'_     .;__,'  /           
+  :     |,-. '  | |    .   ; ,. : |   :     |         |   :     | ,' ,'|    |  |   |            
+  |   : '  | |  | :    '   | |: : |   | .\  .         |   | .\  . '  | |    :__,'| :            
+  |   |  / : '  : |__  '   | .; : .   ; ';  |         .   ; ';  | |  | :      '  : |__          
+  '   : |: | |  | '.'| |   :    | '   .   . |         '   .   . | '  : |__    |  | '.'|         
+  |   | '/ : ;  :    ;  \   \  /   `---`-'| |          `---`-'| | |  | '.'|   ;  :    ;         
+  |   :    | |  ,   /    `----'    .'__/\_: |          .'__/\_: | ;  :    ;   |  ,   /          
+  /    \  /   ---`-'               |   :    :          |   :    : |  ,   /     ---`-'           
+  `-'----'                          \   \  /            \   \  /   ---`-'                       
+                                     `--`-'              `--`-'                                 
+""", style='yellow')
+            console.print("Welcome to GitBlog - A Static Site Generator CLI for GitHub repositories.\n", style="bold green")
+            console.print("Commands available:")
+            console.print("  build  - Build the static site from content")
+            console.print("  add    - Add a repository to the blog")
+            console.print("  addall - Add all repositories to the blog")
+            console.print("  delete - Delete a specific blog")
+            console.print("  show   - Show a list of all articles")
+            console.print("  open   - Open the generated site in a web browser\n")
+            console.print("Use 'bloggit --help' for more information on a specific command.")
+    exit(0)
+
     parser = argparse.ArgumentParser(
         description="GitBlog: A Static Site Generator CLI for GitHub repositories.")
     
@@ -21,6 +52,9 @@ def main():
 
     # Build command
     parser_build = subparsers.add_parser("build", help="Build the static site from content")
+    #username
+    parser.add_argument("--username", help="GitHub username for accessing public repositories")
+
 
     # Add command
     parser_add = subparsers.add_parser("add", help="Add a repository to the blog")
@@ -40,12 +74,14 @@ def main():
     parser_open = subparsers.add_parser("open", help="Open the generated site in a web browser")
 
     args = parser.parse_args()
-
-    if not args.token:
-        console.print("GitHub token is required.", style="bold red")
+    if not args.token and not args.username:
+        console.print("Either GitHub token or username is required.", style="bold red")
         exit(1)
 
-    g = Github(auth=Auth.Token(args.token))
+    if args.token:
+        g = Github(auth=Auth.Token(args.token))
+    else:
+        g = Github(args.username)
 
     if args.command == "build":
         build_blog_from_content()
