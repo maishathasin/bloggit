@@ -31,15 +31,19 @@ def main():
   /    \  /   ---`-'               |   :    :          |   :    : |  ,   /     ---`-'           
   `-'----'                          \   \  /            \   \  /   ---`-'                       
                                      `--`-'              `--`-'                                 
-""", style='yellow')
-            console.print("Welcome to GitBlog - A Static Site Generator CLI for GitHub repositories.\n ", style="bold green")
-            console.print("Commands available:")
-            console.print("  build  - Build the static site from content")
-            console.print("  add    - Add a repository to the blog")
-            console.print("  addall - Add all repositories to the blog")
-            console.print("  delete - Delete a specific blog")
-            console.print("  show   - Show a list of all articles")
-            console.print("  open   - Open the generated site in a web browser\n")
+""", style='yellow',justify='left')
+            console.print(""" :sparkles: Welcome to Blog Git - A minimal static site generator for your Github repos.:sparkles:\n  """, style="bold green",justify='left')
+            console.print("""To get started enter your username or use a token to get access to private repositories, you can add
+repos using the add command and generate the site using the build command.By default each blog content is 
+populated with it's READme.md if it exists. All the content is available in the output/content folder 
+                             """,style='yellow',justify='left')
+            console.print("Commands available: \n", style='bold underline green')
+            console.print(" [yellow]build  [/yellow] - Build the static site from content")
+            console.print(" [yellow]add  [/yellow]   - Add a repository or multiple repositories to the blog")
+            console.print(" [yellow]addall  [/yellow]- Add all repositories to the blog")
+            console.print(" [yellow]delete  [/yellow]- Delete a specific blog")
+            console.print(" [yellow]show    [/yellow]- Show a list of all articles already in content")
+            console.print(" [yellow]open    [/yellow]- Open the generated site in a web browser\n")
             console.print("Use 'bloggit --help' for more information on a specific command.")
             exit(0)
 
@@ -85,7 +89,7 @@ def main():
 
     
     if not args.token and not args.username:
-        console.print("Either GitHub token or username is required.", style="bold red")
+        console.print("Either GitHub token or username is required.", style="bold red underline")
         exit(1)
 
     if args.token:
@@ -113,19 +117,23 @@ def open_in_browser():
 
 
 def add_repo(g, repo_name_or_true):
-    if repo_name_or_true is True:
-        # Show all repositories and ask for selection
-        repos = get_user_repositories(g)
-        repo_dict = {repo.name: repo for repo in repos}
+    repos = get_user_repositories(g)
+    repo_dict = {repo.name: repo for repo in repos}
+    if repo_name_or_true is None or repo_name_or_true is True:
         console.print("Select repositories to create blogs from (comma-separated):")
         for repo_name in repo_dict.keys():
             console.print(repo_name, style="italic blue")
 
         selected_repo_names = input().split(',')
+        print(selected_repo_names)
         selected_repos = [repo_dict[name.strip()] for name in selected_repo_names if name.strip() in repo_dict]
+        print(selected_repos)
     else:
-        # Specific repository name provided
-        selected_repos = [g.get_repo(repo_name_or_true)]
+        selected_repos = []
+        if repo_name_or_true in repo_dict:
+            selected_repos.append(repo_dict[repo_name_or_true])
+        else:
+            console.print(f"Repository '{repo_name_or_true}' not found.", style="bold red")
 
     repo_tags = {}
     for repo in selected_repos:

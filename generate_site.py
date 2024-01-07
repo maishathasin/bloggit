@@ -10,12 +10,6 @@ import webbrowser
 
 
 
-load_dotenv()
-token = ''
-auth = Auth.Token(token)
-g = Github(auth=auth)
-
-
 
 # Directory Definitions
 TEMPLATE_DIR = 'templates'
