@@ -1,19 +1,19 @@
 
 import os
-import requests
 import markdown2
 from jinja2 import Environment, FileSystemLoader
 from github import Github, Auth
 from dotenv import load_dotenv
 import os 
+import argparse
+import webbrowser
+
+
 
 load_dotenv()
 token = ''
-print(token)
 auth = Auth.Token(token)
-print(auth)
 g = Github(auth=auth)
-print(g)
 
 
 
@@ -138,7 +138,6 @@ def generate_blog_html(g, repo_tags):
 
     # Update and save tags
     for repo_name, new_tags in repo_tags.items():
-        # Combine new tags with existing ones, avoiding duplicates
         existing_tags_for_repo = set(existing_tags.get(repo_name, []))
         updated_tags = list(existing_tags_for_repo.union(new_tags))
         existing_tags[repo_name] = updated_tags
@@ -159,7 +158,7 @@ def build_blog_from_content():
     repo_contents = {}
     for file_name in os.listdir(content_dir):
         if file_name.endswith('.html'):
-            repo_name = file_name[:-5]  # Remove '.html'
+            repo_name = file_name[:-5] 
             with open(os.path.join(content_dir, file_name), 'r') as file:
                 repo_contents[repo_name] = file.read()
 
@@ -171,7 +170,6 @@ def build_blog_from_content():
         print("Tags file not found. Tags will be empty.")
         repo_tags = {repo: [] for repo in repo_contents}
 
-    # Generate the main blog page using the saved content
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     template = env.get_template('blog_template.html')
     output_from_parsed_template = template.render(repos=repo_contents, repo_tags=repo_tags)
@@ -179,9 +177,7 @@ def build_blog_from_content():
     with open(os.path.join(OUTPUT_DIR, 'index.html'), 'w') as file:
         file.write(output_from_parsed_template)
 
-    print("Blog built successfully from content folder.")
-
-
+    print("Blog built successfully from content folder , named index.html")
 
 
 
@@ -190,19 +186,51 @@ def get_tags_for_repo(repo_name):
     return tags_str.split(',') if tags_str.strip() else None
 
 
+def delete_blog(repo_name):
+    content_file_path = os.path.join(OUTPUT_DIR, 'content', f'{repo_name}.html')
+    tags_file_path = os.path.join(OUTPUT_DIR, 'tags.json')
+
+    # Delete the blog HTML file
+    if os.path.exists(content_file_path):
+        os.remove(content_file_path)
+        print(f"Deleted blog content for {repo_name}.")
+    else:
+        print(f"No content file found for {repo_name}.")
+
+    # Update the tags
+    if os.path.exists(tags_file_path):
+        with open(tags_file_path, 'r') as file:
+            tags = json.load(file)
+
+        # Remove the tags for the deleted blog
+        if repo_name in tags:
+            del tags[repo_name]
+
+            # Save the updated tags
+            with open(tags_file_path, 'w') as file:
+                json.dump(tags, file, indent=4)
+            print(f"Updated tags after deleting {repo_name}.")
+        else:
+            print(f"No tags found for {repo_name}.")
+    else:
+        print(f"Tags file not found.")
+
+
 
     
 # Generate the file tree for only input 
 # and only generate the input for either public or give github token 
-
+'''
 repos = get_user_repositories(g)
-#print(repos)
 print("Select repositories to create blogs from (comma-separated):")
-for i, repo in enumerate(repos):
-    print(f"{i}: {repo.name}")
+repo_dict = {repo.name: repo for repo in repos}
 
-selected_indexes = input()
-selected_repos = [repos[int(i)] for i in selected_indexes.split(',')]
+for repo_name in repo_dict.keys():
+    print(repo_name)
+
+selected_repo_names = input().split(',')
+selected_repos = [repo_dict[name.strip()] for name in selected_repo_names if name.strip() in repo_dict]
+
 
 # Collect tags for each selected repository
 
@@ -216,4 +244,106 @@ for repo in selected_repos:
 # Generate blog HTML using the selected repositories and their respective tags
 generate_blog_html(g, repo_tags)
 build_blog_from_content()
+delete_blog('mori.css')
+'''
 
+
+from rich.console import Console
+from rich.table import Table
+
+
+console = Console()
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="GitBlog: A Static Site Generator CLI for GitHub repositories.",
+        formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("--token", help="GitHub token for authentication")
+    parser.add_argument("--build", action="store_true", help="Build the static site from content")
+    parser.add_argument("--add", nargs='?', const=True, default=False, help="Add a repository to the blog")
+    parser.add_argument("--addall", action="store_true", help="Add all repositories to the blog")
+    parser.add_argument("--delete", help="Delete a specific blog\nUsage: --delete <blog_name>")
+    parser.add_argument("--show", action="store_true", help="Show a list of all articles")
+    parser.add_argument("--version", action="version", version="Static Site Generator 1.0")
+    parser.add_argument("--open", action="store_true", help="Open the generated site in a web browser")
+
+
+    args = parser.parse_args()
+
+    if args.token:
+        g = Github(auth=Auth.Token(args.token))
+        console.print("Authenticated with GitHub", style="bold green")
+    else:
+        console.print("GitHub token is required.", style="bold red")
+        exit(1)
+
+    if args.build:
+        build_blog_from_content()
+    elif args.open:
+        open_in_browser()
+    elif args.add is not False:
+        add_repo(g, args.add)
+    elif args.addall:
+        add_all_repos(g)
+    elif args.delete:
+        delete_blog(args.delete)
+    elif args.show:
+        show_articles()
+
+
+
+# only works if index.html
+def open_in_browser():
+    output_html = 'output/index.html'  
+    if os.path.exists(output_html):
+        webbrowser.open_new_tab(f'file://{os.path.abspath(output_html)}')
+        console.print("Opened the generated site in the web browser.", style="bold green")
+    else:
+        console.print("The output HTML file does not exist. Build the site first, or make sure your output is named index.html", style="bold red")
+
+
+def add_repo(g, repo_name_or_true):
+    if repo_name_or_true is True:
+        # Show all repositories and ask for selection
+        repos = get_user_repositories(g)
+        repo_dict = {repo.name: repo for repo in repos}
+        console.print("Select repositories to create blogs from (comma-separated):")
+        for repo_name in repo_dict.keys():
+            console.print(repo_name, style="italic blue")
+
+        selected_repo_names = input().split(',')
+        selected_repos = [repo_dict[name.strip()] for name in selected_repo_names if name.strip() in repo_dict]
+    else:
+        # Specific repository name provided
+        selected_repos = [g.get_repo(repo_name_or_true)]
+
+    repo_tags = {}
+    for repo in selected_repos:
+        tags = get_tags_for_repo(repo.name)
+        # Ensure tags are a list, even if empty
+        repo_tags[repo.name] = tags if tags is not None else []
+
+    generate_blog_html(g, repo_tags)
+    console.print("Added repositories and generated content.", style="cyan")
+
+
+def add_all_repos(g):
+    repos = get_user_repositories(g)
+    repo_tags = {repo.name: get_tags_for_repo(repo.name) for repo in repos if get_tags_for_repo(repo.name) is not None}
+    generate_blog_html(g, repo_tags)
+    console.print("Added all repositories and generated content.", style="cyan")
+
+def show_articles():
+    content_dir = 'output/content'  # Replace with your actual content directory path
+    articles = os.listdir(content_dir)
+    
+    table = Table(title="Articles in Content Folder", show_header=True, header_style="bold magenta")
+    table.add_column("Article Name", style="italic blue")
+
+    for article in articles:
+        table.add_row(article)
+
+    console.print(table)
+
+if __name__ == "__main__":
+    main()
