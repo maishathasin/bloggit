@@ -5,7 +5,7 @@ A minimal static site generator for your Github repos
 
 [![Python Version](https://img.shields.io/badge/python-3.x-blue.svg)]()
 
-GitBlog is a command-line static site generator that allows users to create personal blogs from their GitHub repositories. It fetches repository information and converts it into a static HTML site and designed with tailwindCSS.
+BlogGit is a command-line static site generator that allows users to create personal blogs from their GitHub repositories. It fetches repository information and converts it into a static HTML site and designed with tailwindCSS.
 
 [![bloggit](bloggit.png)]()
 
