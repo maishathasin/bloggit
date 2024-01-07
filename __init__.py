@@ -32,7 +32,7 @@ def main():
   `-'----'                          \   \  /            \   \  /   ---`-'                       
                                      `--`-'              `--`-'                                 
 """, style='yellow')
-            console.print("Welcome to GitBlog - A Static Site Generator CLI for GitHub repositories.\n", style="bold green")
+            console.print("Welcome to GitBlog - A Static Site Generator CLI for GitHub repositories.\n ", style="bold green")
             console.print("Commands available:")
             console.print("  build  - Build the static site from content")
             console.print("  add    - Add a repository to the blog")
@@ -41,7 +41,7 @@ def main():
             console.print("  show   - Show a list of all articles")
             console.print("  open   - Open the generated site in a web browser\n")
             console.print("Use 'bloggit --help' for more information on a specific command.")
-    exit(0)
+            exit(0)
 
     parser = argparse.ArgumentParser(
         description="GitBlog: A Static Site Generator CLI for GitHub repositories.")
@@ -74,6 +74,16 @@ def main():
     parser_open = subparsers.add_parser("open", help="Open the generated site in a web browser")
 
     args = parser.parse_args()
+    if args.command == "delete":
+        delete_blog(args.blog_name)
+    elif args.command == "show":
+        show_articles()
+    elif args.command == "open":
+        open_in_browser()
+    elif args.command == "build":
+        build_blog_from_content()
+
+    
     if not args.token and not args.username:
         console.print("Either GitHub token or username is required.", style="bold red")
         exit(1)
@@ -83,18 +93,12 @@ def main():
     else:
         g = Github(args.username)
 
-    if args.command == "build":
-        build_blog_from_content()
-    elif args.command == "add":
+    # only can add after getting github
+    if args.command == "add":
         add_repo(g, args.repo_name)
     elif args.command == "addall":
         add_all_repos(g)
-    elif args.command == "delete":
-        delete_blog(args.blog_name)
-    elif args.command == "show":
-        show_articles()
-    elif args.command == "open":
-        open_in_browser()
+
 
 
 
