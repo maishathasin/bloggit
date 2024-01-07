@@ -11,6 +11,7 @@ GitBlog is a command-line static site generator that allows users to create pers
 
 ## Screenshots
 
+[![bloggit](ex1.png)]()
 
 
 
