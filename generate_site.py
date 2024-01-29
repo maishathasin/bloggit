@@ -56,8 +56,6 @@ def get_repo_directory_structure(g, repo_name,username=None):
 
 
 
-
-
 def format_directory_structure(structure):
     def format_tree(node, prefix="", is_last=True):
         tree = ""
@@ -88,7 +86,7 @@ def create_blog_content(g, repo_name,tags):
     try:
 
         # Get directory structure
-        include_directory_tree = input(f"Do you want to include the directory tree for {repo_name}? (Y/N): ").strip().lower() == 'Y'
+        include_directory_tree = input(f"Do you want to include the directory tree for {repo_name}? (Y/N): ").strip().lower() == 'y'
         
         formatted_structure = ""
         if include_directory_tree:
@@ -97,18 +95,24 @@ def create_blog_content(g, repo_name,tags):
 
         
         repo = g.get_user().get_repo(repo_name)
-        # for if there is not , add exeption for if there is no Readme 
         try:
             contents = repo.get_contents("README.md")
              # store each readme in the contents folder as the repo_name and then render from there, instead of 
              # repo name, we make the article name as markdown file name 
              # add flags for build that just builds the content folder, add flags for add
             readme_html = markdown2.markdown(contents.decoded_content.decode('utf-8'))
-                # Convert list of tags into HTML format
-            tags_html = '<ul>' + ''.join([f'<div class= "tag color-change">{tag}</div>' for tag in tags]) + '</ul>'
-            # Incorporate tags into the full content
-            readme_html = f"<pre>{formatted_structure}</pre> <br> {readme_html}<h3>Tags:</h3>{tags_html}"
+
+
+            
+           # Conditionally add tags if they exist
+            if tags:
+                tags_html = '<ul>' + ''.join([f'<div class= "tag color-change">{tag}</div>' for tag in tags]) + '</ul>'
+                tags_section = f"<h3>Tags:</h3>{tags_html}"
+            else:
+                tags_section = ''
+            readme_html = f"<pre>{formatted_structure}</pre> <br> {readme_html} {tags_section}"
         except Exception as e:
+            # for if there is not , add exeption for if there is no Readme 
             contents = ' '
             readme_html = "<p>This is where you add your content</p>"  
 
@@ -252,103 +256,3 @@ build_blog_from_content()
 delete_blog('mori.css')
 '''
 
-
-from rich.console import Console
-from rich.table import Table
-
-
-console = Console()
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="GitBlog: A Static Site Generator CLI for GitHub repositories.",
-        formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("--token", help="GitHub token for authentication")
-    parser.add_argument("--build", action="store_true", help="Build the static site from content")
-    parser.add_argument("--add", nargs='?', const=True, default=False, help="Add a repository to the blog")
-    parser.add_argument("--addall", action="store_true", help="Add all repositories to the blog")
-    parser.add_argument("--delete", help="Delete a specific blog\nUsage: --delete <blog_name>")
-    parser.add_argument("--show", action="store_true", help="Show a list of all articles")
-    parser.add_argument("--version", action="version", version="Static Site Generator 1.0")
-    parser.add_argument("--open", action="store_true", help="Open the generated site in a web browser")
-
-
-    args = parser.parse_args()
-
-    if args.token:
-        g = Github(auth=Auth.Token(args.token))
-        console.print("Authenticated with GitHub", style="bold green")
-    else:
-        console.print("GitHub token is required.", style="bold red")
-        exit(1)
-
-    if args.build:
-        build_blog_from_content()
-    elif args.open:
-        open_in_browser()
-    elif args.add is not False:
-        add_repo(g, args.add)
-    elif args.addall:
-        add_all_repos(g)
-    elif args.delete:
-        delete_blog(args.delete)
-    elif args.show:
-        show_articles()
-
-
-
-# only works if index.html
-def open_in_browser():
-    output_html = 'output/index.html'  
-    if os.path.exists(output_html):
-        webbrowser.open_new_tab(f'file://{os.path.abspath(output_html)}')
-        console.print("Opened the generated site in the web browser.", style="bold green")
-    else:
-        console.print("The output HTML file does not exist. Build the site first, or make sure your output is named index.html", style="bold red")
-
-
-def add_repo(g, repo_name_or_true):
-    if repo_name_or_true is True:
-        # Show all repositories and ask for selection
-        repos = get_user_repositories(g)
-        repo_dict = {repo.name: repo for repo in repos}
-        console.print("Select repositories to create blogs from (comma-separated):")
-        for repo_name in repo_dict.keys():
-            console.print(repo_name, style="italic blue")
-
-        selected_repo_names = input().split(',')
-        selected_repos = [repo_dict[name.strip()] for name in selected_repo_names if name.strip() in repo_dict]
-    else:
-        # Specific repository name provided
-        selected_repos = [g.get_repo(repo_name_or_true)]
-
-    repo_tags = {}
-    for repo in selected_repos:
-        tags = get_tags_for_repo(repo.name)
-        # Ensure tags are a list, even if empty
-        repo_tags[repo.name] = tags if tags is not None else []
-
-    generate_blog_html(g, repo_tags)
-    console.print("Added repositories and generated content.", style="cyan")
-
-
-def add_all_repos(g):
-    repos = get_user_repositories(g)
-    repo_tags = {repo.name: get_tags_for_repo(repo.name) for repo in repos if get_tags_for_repo(repo.name) is not None}
-    generate_blog_html(g, repo_tags)
-    console.print("Added all repositories and generated content.", style="cyan")
-
-def show_articles():
-    content_dir = 'output/content'  # Replace with your actual content directory path
-    articles = os.listdir(content_dir)
-    
-    table = Table(title="Articles in Content Folder", show_header=True, header_style="bold magenta")
-    table.add_column("Article Name", style="italic blue")
-
-    for article in articles:
-        table.add_row(article)
-
-    console.print(table)
-
-if __name__ == "__main__":
-    main()
