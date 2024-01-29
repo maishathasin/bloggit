@@ -48,7 +48,7 @@ bloggit open
 
 
 
-## Usage 
+## Usage  
 ```
 # To build the static site from content
 bloggit build
