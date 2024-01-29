@@ -17,7 +17,7 @@ BlogGit is a command-line static site generator that allows users to create pers
 
 ## Getting Started
 
-1. Install from Pip 
+1. Git clone the repository 
 
 ```bash
 ```
