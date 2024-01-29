@@ -16,12 +16,19 @@ TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-def get_user_repositories(g):
-    user = g.get_user()
+# Function to get repositories for an authenticated user or a specified username
+def get_user_repositories(g, username=None):
+    if username:
+        user = g.get_user(username)
+    else:
+        user = g.get_user()
     return user.get_repos()
 
-def get_repo_directory_structure(g, repo_name):
-    repo = g.get_user().get_repo(repo_name)
+def get_repo_directory_structure(g, repo_name,username=None):
+    if username:
+        repo = g.get_user(username).get_repo(repo_name)
+    else:
+        repo = g.get_user().get_repo(repo_name)
     contents = repo.get_contents("")
     directory_structure = {}
 
@@ -81,12 +88,16 @@ def create_blog_content(g, repo_name,tags):
     try:
 
         # Get directory structure
-        directory_structure = get_repo_directory_structure(g, repo_name)
-        formatted_structure = format_directory_structure(directory_structure)
+        include_directory_tree = input(f"Do you want to include the directory tree for {repo_name}? (Y/N): ").strip().lower() == 'Y'
+        
+        formatted_structure = ""
+        if include_directory_tree:
+            directory_structure = get_repo_directory_structure(g, repo_name)
+            formatted_structure = format_directory_structure(directory_structure)
 
         
         repo = g.get_user().get_repo(repo_name)
-        # for if there is not 
+        # for if there is not , add exeption for if there is no Readme 
         try:
             contents = repo.get_contents("README.md")
              # store each readme in the contents folder as the repo_name and then render from there, instead of 

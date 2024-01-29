@@ -94,9 +94,14 @@ populated with it's READme.md if it exists. All the content is available in the 
 
     if args.token:
         g = Github(auth=Auth.Token(args.token))
+        console.print("Authenticated with GitHub using token", style="bold green")
+
+    elif args.username:
+        g = Github()  
+        console.print(f"Accessing public repositories for username: {args.username}", style="bold green")
     else:
-        
-        g = Github(args.username)
+        console.print("Either GitHub token or username is required.", style="bold red")
+        exit(1)
 
     # only can add after getting github
     if args.command == "add":
@@ -117,8 +122,10 @@ def open_in_browser():
         console.print("The output HTML file does not exist. Build the site first, or make sure your output is named index.html", style="bold red")
 
 
-def add_repo(g, repo_name_or_true):
-    repos = get_user_repositories(g)
+def add_repo(g, repo_name_or_true, username=None):
+    repos = get_user_repositories(g, username)
+    repo_dict = {repo.name: repo for repo in repos} 
+    print(repos)
     repo_dict = {repo.name: repo for repo in repos}
     if repo_name_or_true is None or repo_name_or_true is True:
         console.print("Select repositories to create blogs from (comma-separated):")
