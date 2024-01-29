@@ -38,6 +38,7 @@ go to the content folder
 bloggit build
 ```
 This will create your blog in a single html file called index.html
+
 5.  To open your new blog do 
 
 ```bash
