@@ -7,7 +7,7 @@ import argparse
 import webbrowser
 from github import Github, Auth
 import os 
-from generate_site import  build_blog_from_content, add_repo, delete_blog, get_user_repositories, get_tags_for_repo, generate_blog_html
+from generate_site import  build_blog_from_content, delete_blog, get_user_repositories, get_tags_for_repo, generate_blog_html
 import sys
 
 
@@ -88,13 +88,14 @@ populated with it's READme.md if it exists. All the content is available in the 
         build_blog_from_content()
 
     
-    if not args.token and not args.username:
+    if (not args.token and not args.username and not (args.command == "open")and not (args.command == "show") and not(args.command == "delete") and not (args.command == "build") ):
         console.print("Either GitHub token or username is required.", style="bold red underline")
         exit(1)
 
     if args.token:
         g = Github(auth=Auth.Token(args.token))
     else:
+        
         g = Github(args.username)
 
     # only can add after getting github
