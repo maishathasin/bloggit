@@ -21,7 +21,7 @@
                 {% for repo_name, content in repos.items() %}
                     <li class="article-item cursor-pointer" onclick="showArticle('{{ repo_name }}')">
                         <a href="#{{ repo_name }}" class="text-blue-600 hover:text-blue-800">{{ repo_name }}</a>
-                        <div class="tags">
+                        <div class="tags hide-on-small-screens">
                             {% for tag in repo_tags[repo_name] %}
                                 <span class="tag">{{ tag }}</span>
                             {% endfor %}
